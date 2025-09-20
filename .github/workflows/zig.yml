@@ -25,16 +25,16 @@ jobs:
 
       - name: Build release artifacts
         run: |
-          zig build --fetch=all --global-cache-dir linux-tools
-          tar -cazf linux-tools.tar.gz linux-tools
+          zig build --fetch=all --global-cache-dir linux-tools-cache-${{ github.ref_name }}
+          tar -cazf linux-tools-cache-${{ github.ref_name }}.tar.gz linux-tools-cache-${{ github.ref_name }}
 
       - name: Upload artifact for release job
         # This step only runs if we are building a tag
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
-          name: linux-tools
-          path: linux-tools.tar.gz
+          name: linux-tools-cache
+          path: linux-tools-cache-${{ github.ref_name }}.tar.gz
 
   release:
     # This job will only run when a tag is pushed
@@ -52,11 +52,11 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v5
         with:
-          name: linux-tools
+          name: linux-tools-cache
 
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
           # The file(s) to upload to the release.
           # The download-artifact action places the file in the current directory.
-          files: linux-tools.tar.gz
+          files: linux-tools-cache-${{ github.ref_name }}.tar.gz

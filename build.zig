@@ -92,7 +92,7 @@ pub fn build(b: *std.Build) void {
         } else {
             exe.root_module.addCMacro("NO_YAML", "1");
             exe.addIncludePath(b.path("include"));
-            //exe.addIncludePath(b.path("tools/include"));
+            exe.addIncludePath(b.path("tools/include"));
             exe.addIncludePath(b.path("scripts/include"));
             exe.addIncludePath(b.path("scripts/dtc/libfdt"));
         }
@@ -149,7 +149,7 @@ const Scripts = struct {
     name: []const u8,
     root: []const u8,
     sources: []const []const u8,
-    install_dir: std.Build.InstallDir = .prefix,
+    install_dir: std.Build.InstallDir = .{ .custom = "scripts" },
 };
 
 const scripts: []const Scripts = &.{
@@ -159,7 +159,7 @@ const scripts: []const Scripts = &.{
         .sources = &.{
             "fixdep.c",
         },
-        .install_dir = .{ .custom = "basic" },
+        .install_dir = .{ .custom = "scripts/basic" },
     },
     .{
         .name = "modpost",
@@ -170,7 +170,7 @@ const scripts: []const Scripts = &.{
             "sumversion.c",
             "symsearch.c",
         },
-        .install_dir = .{ .custom = "mod" },
+        .install_dir = .{ .custom = "scripts/mod" },
     },
     .{
         .name = "fdtoverlay",
@@ -188,7 +188,7 @@ const scripts: []const Scripts = &.{
             "fdtoverlay.c",
             "util.c",
         },
-        .install_dir = .{ .custom = "dtc" },
+        .install_dir = .{ .custom = "scripts/dtc" },
     },
     .{
         .name = "dtc",
@@ -206,7 +206,7 @@ const scripts: []const Scripts = &.{
             "dtc-lexer.lex.c",
             "dtc-parser.tab.c",
         },
-        .install_dir = .{ .custom = "dtc" },
+        .install_dir = .{ .custom = "scripts/dtc" },
     },
     .{
         .name = "conf",
@@ -222,7 +222,7 @@ const scripts: []const Scripts = &.{
             "symbol.c",
             "util.c",
         },
-        .install_dir = .{ .custom = "kconfig" },
+        .install_dir = .{ .custom = "scripts/kconfig" },
     },
     .{
         .name = "modpost",
@@ -230,7 +230,7 @@ const scripts: []const Scripts = &.{
         .sources = &.{
             "mk_elfconfig.c",
         },
-        .install_dir = .{ .custom = "mod" },
+        .install_dir = .{ .custom = "scripts/mod" },
     },
     .{
         .name = "sorttable",
