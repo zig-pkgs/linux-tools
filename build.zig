@@ -4,6 +4,11 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const zlib_dep = b.dependency("zlib", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
     const elfutils_dep = b.dependency("elfutils", .{
         .target = target,
         .optimize = optimize,
@@ -36,17 +41,11 @@ pub fn build(b: *std.Build) void {
         .files = &bpf_lib_src,
     });
     libbpf.linkLibrary(elfutils_dep.artifact("elf"));
-    if (elfutils_dep.builder.lazyDependency("zlib", .{
-        .target = target,
-        .optimize = optimize,
-    })) |dependency| {
-        const zlib_upstream = dependency.builder.dependency("zlib", .{});
-        libbpf.addIncludePath(zlib_upstream.path("."));
-    }
     libbpf.root_module.addCMacro("_LARGEFILE64_SOURCE", "");
     libbpf.root_module.addCMacro("_FILE_OFFSET_BITS", "64");
     libbpf.addIncludePath(b.path("tools/include"));
     libbpf.addIncludePath(b.path("tools/include/uapi"));
+    libbpf.addIncludePath(zlib_dep.artifact("z").getEmittedIncludeTree());
 
     const libsubcmd = b.addLibrary(.{
         .name = "subcmd",
